@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import Page from "./Page";
+import StateContext from "../StateContext";
 
 function Home() {
+  const appState = useContext(StateContext)
+
   return (
     <Page title="Your feed">
       <h2 className="text-center">
-        Hello <strong>{localStorage.getItem("complexappUsername")}</strong>,
+        Hello <strong>{appState.user.username}</strong>,
         your feed is empty.
       </h2>
       <p className="lead text-muted text-center">
