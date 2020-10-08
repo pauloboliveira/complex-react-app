@@ -1,7 +1,10 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useReducer, useEffect, Profiler } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { useImmerReducer } from 'use-immer'
+
+import StateContext from "./StateContext";
+import DispatchContext from "./DispatchContext";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -16,8 +19,7 @@ import CreatePost from "./components/CreatePost";
 import Axios from "axios";
 import ViewSinglePost from "./components/ViewSinglePost";
 import FlashMessages from "./components/FlashMessages";
-import StateContext from "./StateContext";
-import DispatchContext from "./DispatchContext";
+import Profile from "./components/Profile";
 
 function Main() {
   const initialState = {
@@ -88,6 +90,10 @@ function Main() {
 
             <Route path="/post/:id" exact>
               <ViewSinglePost />
+            </Route>
+
+            <Route path="/profile/:username">
+              <Profile></Profile>
             </Route>
           </Switch>
 
