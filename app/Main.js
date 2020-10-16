@@ -20,6 +20,7 @@ import Axios from "axios";
 import ViewSinglePost from "./components/ViewSinglePost";
 import FlashMessages from "./components/FlashMessages";
 import Profile from "./components/Profile";
+import EditPost from "./components/EditPost";
 
 function Main() {
   const initialState = {
@@ -94,6 +95,10 @@ function Main() {
 
             <Route path="/profile/:username">
               <Profile></Profile>
+            </Route>
+
+            <Route path="/post/:id/edit" exact>
+              <EditPost></EditPost>
             </Route>
           </Switch>
 
