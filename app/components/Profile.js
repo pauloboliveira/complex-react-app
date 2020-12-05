@@ -5,8 +5,7 @@ import Axios from "axios"
 import StateContext from "../StateContext"
 import ProfilePosts from "./ProfilePosts"
 import { useImmer } from 'use-immer'
-import ProfileFollowers from "./ProfileFollowers"
-import ProfileFollowing from "./ProfileFollowing"
+import ProfileFollow from "./ProfileFollow"
 
 function Profile() {
   const { username } = useParams()
@@ -141,10 +140,10 @@ function Profile() {
           <ProfilePosts />
         </Route>
         <Route path="/profile/:username/followers">
-          <ProfileFollowers />
+          <ProfileFollow action="followers" followerCount={state.profileData.counts.followerCount}/>
         </Route>
         <Route path="/profile/:username/following">
-          <ProfileFollowing />
+          <ProfileFollow action="following" followingCount={state.profileData.counts.followingCount} />
         </Route>
       </Switch>
     </Page>
