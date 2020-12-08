@@ -27,7 +27,7 @@ function ProfileFollow(props) {
         return () => {
             ourRequest.cancel()
         }
-    }, [username, props.action])
+    }, [username, props.action, props.followerCount, props.followingCount])
 
     if (isLoading) return <LoadingDotIcon />
 
@@ -38,6 +38,12 @@ function ProfileFollow(props) {
             )} 
             {username != appState.user.username && props.followingCount == 0 && (
                 <h6>This user is not following anyone yet!</h6>
+            )}
+            {username == appState.user.username && props.followerCount == 0 && (
+                <h6>You don't have any followers yet! Perhaps you should create more posts to get more attention.</h6>
+            )}
+            {username != appState.user.username && props.followerCount == 0 && (
+                <h6>This user don't have any followers! Be nice and be their first follower.</h6>
             )}
             {posts.map((follower, index) => {
                 return (
