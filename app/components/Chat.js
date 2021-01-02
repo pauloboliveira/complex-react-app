@@ -1,23 +1,24 @@
-import React, { useContext, useEffect, useRef } from "react"
-import { io } from "socket.io-client"
-import { useImmer } from "use-immer"
-import DispatchContext from "../DispatchContext"
+import React, { useEffect, useContext, useRef } from "react"
 import StateContext from "../StateContext"
-
+import DispatchContext from "../DispatchContext"
+import { useImmer } from "use-immer"
+import io from "socket.io-client"
 const socket = io("http://localhost:8080")
 
 function Chat() {
     const chatField = useRef(null)
+    const chatLog = useRef(null)
     const appState = useContext(StateContext)
     const appDispatch = useContext(DispatchContext)
     const [state, setState] = useImmer({
-        fieldValue: '',
-        chatMessages: []
+        fieldValue: "",
+        chatMessages: [],
     })
 
     useEffect(() => {
         if (appState.isChatOpen) {
             chatField.current.focus()
+            appDispatch({ type: "clearUnreadChatCount" })
         }
     }, [appState.isChatOpen])
 
@@ -30,16 +31,15 @@ function Chat() {
     }, [])
 
     useEffect(() => {
-        socket.on("chatFromServer", message => {
-            setState(draft => {
-                draft.chatMessages.push(message)
-            })
-        })
-    }, [])
+        chatLog.current.scrollTop = chatLog.current.scrollHeight
+        if (state.chatMessages.length && !appState.isChatOpen) {
+            appDispatch({ type: "incrementUnreadChatCount" })
+        }
+    }, [state.chatMessages])
 
     function handleFieldChange(e) {
         const value = e.target.value
-        setState(draft => {
+        setState((draft) => {
             draft.fieldValue = value
         })
     }
@@ -56,25 +56,15 @@ function Chat() {
         })
     }
 
-    // function handleSubmit(e) {
-    //     e.preventDefault()
-
-    //     socket.emit("chatFromBrowser", { message: state.fieldValue, token: appState.user.token })
-    //     setState(draft => {
-    //         draft.chatMessages.push({ message: draft.fieldValue, username: appState.user.username, avatar: appState.user.avatar })
-    //         draft.fieldValue = ""
-    //     })
-    // }
-
     return (
         <div id="chat-wrapper" className={"chat-wrapper shadow border-top border-left border-right " + (appState.isChatOpen ? "chat-wrapper--is-visible" : "")}>
             <div className="chat-title-bar bg-primary">
                 Chat
-            <span onClick={() => appDispatch({ type: "closeChat" })} className="chat-title-bar-close">
+        <span onClick={() => appDispatch({ type: "closeChat" })} className="chat-title-bar-close">
                     <i className="fas fa-times-circle"></i>
                 </span>
             </div>
-            <div id="chat" className="chat-log">
+            <div id="chat" className="chat-log" ref={chatLog}>
                 {state.chatMessages.map((message, index) => {
                     if (message.username == appState.user.username) {
                         return (
@@ -95,7 +85,7 @@ function Chat() {
                             <div className="chat-message">
                                 <div className="chat-message-inner">
                                     <a href="#">
-                                        <strong>{message.username}:</strong>
+                                        <strong>{message.username}: </strong>
                                     </a>
                                     {message.message}
                                 </div>
