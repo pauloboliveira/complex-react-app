@@ -3,6 +3,8 @@ import Page from "./Page";
 import Axios from "axios";
 import { useImmerReducer } from "use-immer";
 import { CSSTransition } from "react-transition-group";
+import { useContext } from "react";
+import DispatchContext from "../DispatchContext"
 
 function HomeGuest() {
   const initialState = {
@@ -28,6 +30,8 @@ function HomeGuest() {
     submitCount: 0
   }
 
+  const appDispatch = useContext(DispatchContext)
+
   function ourReducer(draft, action) {
     switch (action.type) {
       case "usernameImmediately":
@@ -47,7 +51,7 @@ function HomeGuest() {
           draft.username.hasErrors = true
           draft.username.message = "Username must be at least 3 characters."
         }
-        if (!draft.hasErrors) {
+        if (!draft.username.hasErrors && !action.noRequest) {
           draft.username.checkCount++
         }
         return
@@ -69,7 +73,7 @@ function HomeGuest() {
           draft.email.hasErrors = true
           draft.email.message = "You must provide a valid email address"
         }
-        if (!draft.email.hasErrors) {
+        if (!draft.email.hasErrors && !action.noRequest) {
           draft.email.checkCount++
         }
         return
@@ -97,12 +101,11 @@ function HomeGuest() {
         }
         return
       case "submitForm":
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.email.hasErrors && draft.email.isUnique && !draft.password.hasErrors) {
+          draft.submitCount++
+        }
         return
     }
-  }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
   }
 
   const [state, dispatch] = useImmerReducer(ourReducer, initialState)
@@ -161,6 +164,39 @@ function HomeGuest() {
       return () => ourRequest.cancel
     }
   }, [state.email.checkCount])
+
+  useEffect(() => {
+    if (state.submitCount) {
+      const ourRequest = Axios.CancelToken.source()
+      async function fetchResults() {
+        try {
+          const response = await Axios.post('/register', { username: state.username.value, email: state.email.value, password: state.password.value }, { cancelToken: ourRequest.token })
+          appDispatch({ type: "login", data: response.data })
+          appDispatch({ type: "flashMessage", value: "Congrats! Welcome to your new account." })
+          dispatch({ type: "usernameUniqueResults", value: response.data })
+        } catch (e) {
+          console.log("There was a problem or the request was cancelled")
+        }
+      }
+
+      fetchResults()
+      return () => ourRequest.cancel
+    }
+  }, [state.submitCount])
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    dispatch({ type: "usernameImmediately", value: state.username.value })
+    dispatch({ type: "usernameAfterDelay", value: state.username.value, noRequest: true })
+
+    dispatch({ type: "emailImmediately", value: state.email.value })
+    dispatch({ type: "emailAfterDelay", value: state.email.value, noRequest: true })
+
+    dispatch({ type: "passwordImmediately", value: state.password.value })
+    dispatch({ type: "passwordAfterDelay", value: state.password.value })
+
+    dispatch({ type: "submitForm" })
+  }
 
   return (
     <Page title="Welcome" wide={true}>
