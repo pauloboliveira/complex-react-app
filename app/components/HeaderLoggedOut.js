@@ -6,7 +6,7 @@ function HeaderLoggedOut(props) {
   const appDispatch = useContext(DispatchContext)
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  
+
 
   async function handleSubimt(e) {
     e.preventDefault();
@@ -17,9 +17,11 @@ function HeaderLoggedOut(props) {
         password,
       });
       if (response.data) {
-        appDispatch({type: "login", data: response.data})
+        appDispatch({ type: "login", data: response.data })
+        appDispatch({ type: "flashMessage", value: "You have successfully logged in." })
       } else {
         console.log("Incorrect username / password");
+        appDispatch({ type: "flashMessage", value: "Invalid username / password." })
       }
     } catch (error) {
       console.log("There was a problem");
