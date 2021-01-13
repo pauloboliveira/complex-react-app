@@ -6,7 +6,7 @@ import { useImmerReducer } from 'use-immer'
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
 
-Axios.defaults.baseURL = "http://localhost:8080";
+Axios.defaults.baseURL = process.env.BACKENDURL || "";
 import { CSSTransition } from "react-transition-group";
 
 import Header from "./components/Header";
