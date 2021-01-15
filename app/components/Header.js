@@ -7,6 +7,7 @@ import StateContext from "../StateContext";
 
 function Header(props) {
   const appState = useContext(StateContext)
+  const headerContent = appState.loggedIn ? <HeaderLoggedIn /> : <HeaderLoggedOut />
 
   return (
     <header className="header-bar mb-3">
@@ -14,10 +15,10 @@ function Header(props) {
         <h4 className="my-0 mr-md-auto font-weight-normal">
           <Link to="/" className="text-white">
             {" "}
-            ComplexApp{" "}
+            ComplexApp!{" "}
           </Link>
         </h4>
-        {appState.loggedIn ? <HeaderLoggedIn /> : <HeaderLoggedOut />}
+        {!props.staticEmpty ? headerContent : ""}
       </div>
     </header>
   );
