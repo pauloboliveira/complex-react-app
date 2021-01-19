@@ -6,7 +6,7 @@ import { useImmerReducer } from 'use-immer'
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
 
-Axios.defaults.baseURL = process.env.BACKENDURL || "";
+Axios.defaults.baseURL = process.env.BACKENDURL || "https://backendofreactapp.herokuapp.com";
 import { CSSTransition } from "react-transition-group";
 
 import Header from "./components/Header";

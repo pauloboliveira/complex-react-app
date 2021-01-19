@@ -23,7 +23,7 @@ function Chat() {
     }, [appState.isChatOpen])
 
     useEffect(() => {
-        socket.current = io("http://localhost:8080")
+        socket.current = io(process.env.BACKENDURL || "https://backendofreactapp.herokuapp.com")
 
         socket.current.on("chatFromServer", (message) => {
             setState((draft) => {
